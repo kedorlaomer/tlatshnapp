@@ -1,29 +1,46 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
+import { createStackNavigator } from '@react-navigation/stack';
+import { StyleSheet, View } from 'react-native';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import { RootNavigator } from '@/app/stack/_layout.tsx';
+
+import GeneralCalendarScreen from '@/app/stack/calendar';
+import SidraScreen from '@/app/stack/index';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  if (!loaded) {
-    // Async font loading only occurs in development.
-    return null;
-  }
+  const Stack = createStackNavigator();
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
+      <View style={styles.container}>
+        <Stack.Navigator
+          screenOptions={{
+            headerShown: false
+          }}
+        >
+          <Stack.Screen
+            name="TlattShnapp"
+            component={SidraScreen}
+          />
+          <Stack.Screen
+            name="calendar"
+            component={GeneralCalendarScreen}
+          />
+        </Stack.Navigator>
+      </View>
+      <StatusBar style="light" />
     </ThemeProvider>
   );
 }
+
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    overflow: 'auto',
+  },
+});
