@@ -5,6 +5,7 @@ import hebrew from '@/assets/hebrew';
 import { Alia } from '@/components/Alia';
 import { baseFontSize } from '@/constants/Fonts';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import extractSpan from '@/helpers/extractSpan';
 
 export type SidraProps = {
     label: string,
@@ -32,7 +33,7 @@ export function Sidra({
         ]}>{label}</Text>
     ];
     for (let i = 0; i < aliot_start.length; i++) {
-        const heading = `${i+1}.` 
+        const heading = `${i+1}.`
         rv.push(<Alia key={i} psukim={hebrew} from_={aliot_start[i]} to_={aliot_end[i]} heading={heading}/>)
     }
 

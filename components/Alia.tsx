@@ -22,6 +22,8 @@ export function Alia({
 }: AliaProps) {
 
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  let counter = 0;
+  const createKey = () => "passuk" + counter++;
     return (
       <View>
         <Text style={[
@@ -32,7 +34,7 @@ export function Alia({
       </Text>
           {
             extractSpan(psukim, from_, to_).map(([source, text]) => (
-              <Passuk key={source} source={source} text={text}/>))
+              <Passuk key={createKey()} source={source} text={text}/>))
           }
       </View>
    );
