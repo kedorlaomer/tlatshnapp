@@ -24,6 +24,9 @@ export function Alia({
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
   let counter = 0;
   const createKey = () => "passuk" + counter++;
+  console.log(`from='${from_}', to='${to_}'`);
+  const span = extractSpan(psukim, from_, to_)
+  console.log(`span = ${span}`)
     return (
       <View>
         <Text style={[
@@ -33,7 +36,7 @@ export function Alia({
          {heading}{'    '}
       </Text>
           {
-            extractSpan(psukim, from_, to_).map(([source, text]) => (
+            span.map(([source, text]) => (
               <Passuk key={createKey()} source={source} text={text}/>))
           }
       </View>

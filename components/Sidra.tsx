@@ -6,7 +6,6 @@ import { Alia } from '@/components/Alia';
 import { baseFontSize } from '@/constants/Fonts';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import extractSpan from '@/helpers/extractSpan';
-import { expandHaftaraSpan } from '@/helpers/expandHaftaraSpan';
 
 export type SidraProps = {
     label: string,
@@ -22,11 +21,14 @@ export function Sidra({
     const KEY = "Name of the Sidra";
     const isDefined = (x) => x != "";
     const readingData = generalCalendarData.find((x) => x[KEY] == label);
-    const aliot_start = [1,2,3,4,5,6,7].map((x) => `Beginning of ${x}. Aliya`).map((x) => readingData[x]).filter(isDefined)
-    const aliot_end = [1,2,3,4,5,6,7].map((x) => `End of ${x}. Aliya`).map((x) => readingData[x]).filter(isDefined)
+    console.log(`label = ${label}`);
+    const aliotStart = [1,2,3,4,5,6,7].map((x) => `Beginning of ${x}. Aliya`).map((x) => readingData[x]).filter(isDefined)
+    const aliotEnd = [1,2,3,4,5,6,7].map((x) => `End of ${x}. Aliya`).map((x) => readingData[x]).filter(isDefined)
     
-    const haftara = readingData["Haftara"];
-    const [haftara_start, haftara_end] = expandHaftaraSpan(haftara);
+    const haftaraStart = readingData["Beginning of Haftara"]
+    const haftaraEnd = readingData["End of Haftara"]
+    console.log(readingData)
+    console.log(haftaraStart, haftaraEnd);
 
     let rv = [
         <Text 
@@ -36,13 +38,13 @@ export function Sidra({
           styles.heading
         ]}>{label}</Text>
     ];
-    for (let i = 0; i < aliot_start.length; i++) {
+    for (let i = 0; i < aliotStart.length; i++) {
         const heading = `${i+1}.`
-        rv.push(<Alia key={i} psukim={hebrew} from_={aliot_start[i]} to_={aliot_end[i]} heading={heading}/>)
+        rv.push(<Alia key={i} psukim={hebrew} from_={aliotStart[i]} to_={aliotEnd[i]} heading={heading}/>)
     }
 
-    if (haftara_start && haftara_end) {
-        rv.push(<Alia key="haftara" psukim={hebrew} from_={haftara_start} to_={haftara_end} heading="הפטרה"/>)
+    if (haftaraStart && haftaraEnd) {
+        rv.push(<Alia key="haftara" psukim={hebrew} from_={haftaraStart} to_={haftaraEnd} heading="הפטרה"/>)
     }
 
     return rv
