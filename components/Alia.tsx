@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from 'react-native';
 import { Passuk } from '@/components/Passuk';
-import extractSpan from '@/helpers/extractSpan.tsx';
+import extractSpan from '@/helpers/extractSpan';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { baseFontSize } from '@/constants/Fonts';
 
@@ -8,7 +8,9 @@ export type AliaProps = {
    psukim: Map<string, string>,
    from_: string,
    to_: string,
-   heading: string
+   heading: string,
+   lightColor?: string,
+   darkColor?: string,
 }
 
 export function Alia({
@@ -16,9 +18,8 @@ export function Alia({
    from_,
    to_,
    heading,
-  lightColor,
-  darkColor,
-   ...rest
+  lightColor = '#000000',
+  darkColor = '#FFFFFF',
 }: AliaProps) {
 
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
