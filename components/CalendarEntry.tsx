@@ -5,45 +5,55 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 import { baseFontSize } from '@/constants/Fonts';
 
 export type CalendarEntryProps = TextProps & {
-  label: string;
-  onSelect: () => void;
+  label?: string;
+  sidra?: string;
+  haftara?: string;
   lightColor: string;
   darkColor: string;
 };
 
 export default function CalendarEntry({
   label,
-  onSelect,
-  style,
+  sidra,
+  haftara,
   lightColor,
   darkColor,
 }: CalendarEntryProps) {
+  console.log('CalendarEntry rendered with label:', label, 'sidra:', sidra, 'haftara:', haftara);
 
-  let bgColor = useThemeColor({ dark: lightColor, light: darkColor }, 'text');
+  let textColor = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const borderColor = useThemeColor({ light: '#ccc', dark: '#555' }, 'text');
+  const backgroundColor = useThemeColor({ light: '#fff', dark: '#333' }, 'background');
+  
   const styles = StyleSheet.create({
       button: {
       borderWidth: 1,
-      borderColor: '#ccc',
+      borderColor: borderColor,
       borderRadius: 5,
       paddingVertical: 5,
       paddingHorizontal: 5,
       margin: 5,
+      backgroundColor: backgroundColor,
     },
     buttonText: {
       fontSize: baseFontSize,
-      color: bgColor,
+      color: textColor,
     },
   });
 
 
   const navigation = useNavigation();
   const handlePress = () => {
-         navigation.navigate('calendar', { label: label });
+    // @ts-ignore
+    navigation.navigate('calendar', { label: label, sidra: sidra, haftara: haftara });
   }
+
+  // Use label if provided and non-empty, otherwise use sidra
+  const displayLabel = (label && label.trim() !== '') ? label : sidra;
 
   return (
     <TouchableOpacity style={styles.button} onPress={handlePress}>
-      <Text style={styles.buttonText}>{label}</Text>
+      <Text style={styles.buttonText}>{displayLabel}</Text>
     </TouchableOpacity>
   );
 }

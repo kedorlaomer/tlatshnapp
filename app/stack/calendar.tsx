@@ -9,7 +9,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { HomeButton } from '@/components/HomeButton';
 
-import baseFontSize from '@/constants/Fonts';
+import { baseFontSize } from '@/constants/Fonts';
 
 import generalCalendarData from '@/assets/general_calendar.json';
 
@@ -17,7 +17,7 @@ import { Sidra } from '@/components/Sidra';
 
 export default function SidraScreen() {
   const route = useRoute();
-  const label = route.params?.label;
+  const { label, sidra, haftara } = route.params as { label?: string; sidra?: string; haftara?: string };
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -27,7 +27,13 @@ export default function SidraScreen() {
           style={styles.reactLogo}
         />
       }>
-      <Sidra label={label} />
+      <Sidra 
+        label={label} 
+        sidra={sidra} 
+        haftara={haftara} 
+        lightColor="#000000"
+        darkColor="#FFFFFF"
+      />
       <HomeButton />
     </ParallaxScrollView>
   );

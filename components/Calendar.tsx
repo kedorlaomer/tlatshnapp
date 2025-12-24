@@ -18,7 +18,6 @@ export function Calendar({ labels, lightColor, darkColor }: CalendarProps) {
         <CalendarEntry
           key={index}
           label={label}
-          active={index === selectedIndex}
           lightColor={lightColor}
           darkColor={darkColor}
         /> : label
@@ -30,7 +29,7 @@ export function Calendar({ labels, lightColor, darkColor }: CalendarProps) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row-reverse',
-    justifyContent: 'flex',
+    justifyContent: 'flex-start',
     flexWrap: 'wrap',
     padding: 10,
   },

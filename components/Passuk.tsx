@@ -7,6 +7,8 @@ import { baseFontSize } from '@/constants/Fonts';
 export type PassukProps = TextProps & {
     source: string,
     text: string,
+    lightColor?: string,
+    darkColor?: string,
 };
 
 export function Passuk({
