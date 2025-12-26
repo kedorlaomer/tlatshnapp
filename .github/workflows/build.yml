@@ -19,13 +19,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '18'
-          cache: 'yarn'
 
       - name: Setup Expo CLI
         run: npm install -g @expo/cli eas-cli
 
       - name: Install dependencies
-        run: yarn install
+        run: npm install
 
       - name: Setup Java
         uses: actions/setup-java@v4
