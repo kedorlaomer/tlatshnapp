@@ -81,6 +81,11 @@ jobs:
         with:
           xcode-version: latest-stable
 
+      - name: Debug variables
+        run: set
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
       - name: Authenticate with Expo
         run: eas whoami
         env:
