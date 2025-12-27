@@ -45,17 +45,35 @@ jobs:
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Find and upload APK artifacts
+      - name: Find Android build artifacts
         run: |
-          find . -name "*.apk" -type f
+          find . -name "*.aab" -o -name "*.apk" -type f
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Upload APK artifacts
+      - name: Download Bundletool
+        run: |
+          curl -L -o bundletool.jar https://github.com/google/bundletool/releases/latest/download/bundletool-all-1.18.3.jar
+
+      - name: Extract APK from AAB
+        run: |
+          AAB_FILE=$(find . -name "*.aab" -type f | head -1)
+          if [ -n "$AAB_FILE" ]; then
+            echo "Found AAB file: $AAB_FILE"
+            java -jar bundletool.jar build-apks --bundle="$AAB_FILE" --output=app.apks --mode=universal
+            unzip -o app.apks -d ./apks_output/
+            find ./apks_output/ -name "*.apk" -exec cp {} ./ \;
+          else
+            echo "No AAB file found"
+          fi
+
+      - name: Upload Android artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: android-apk
-          path: "**/*.apk"
+          name: android-build
+          path: |
+            **/*.aab
+            **/*.apk
           retention-days: 30
 
   ios-release:
