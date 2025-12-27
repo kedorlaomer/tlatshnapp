@@ -41,21 +41,21 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build Android APK
-        run: eas build --platform android --profile production --non-interactive
+        run: eas build --platform android --profile production --non-interactive --local
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: android-build
-          path: ./builds
+      - name: Find and upload APK artifacts
+        run: |
+          find . -name "*.apk" -type f
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Upload APK artifacts
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: ./builds/*.apk
+          path: "**/*.apk"
           retention-days: 30
 
   ios-release:
@@ -81,30 +81,25 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Debug variables
-        run: set
-        env:
-          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
       - name: Authenticate with Expo
         run: eas whoami
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build iOS Archive
-        run: eas build --platform ios --profile production --non-interactive
+        run: eas build --platform ios --profile production --non-interactive --local
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ios-build
-          path: ./builds
+      - name: Find and upload iOS artifacts
+        run: |
+          find . -name "*.ipa" -type f
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Upload iOS artifacts
         uses: actions/upload-artifact@v4
         with:
           name: ios-archive
-          path: ./builds/*.ipa
+          path: "**/*.ipa"
           retention-days: 30
