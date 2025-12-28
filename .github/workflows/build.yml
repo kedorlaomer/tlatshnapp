@@ -55,12 +55,32 @@ jobs:
         run: |
           curl -L -o bundletool.jar https://github.com/google/bundletool/releases/latest/download/bundletool-all-1.18.3.jar
 
+      - name: Setup Android signing
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+      - name: Sign AAB
+        run: |
+          AAB_FILE=$(find . -name "*.aab" -type f | head -1)
+          if [ -n "$AAB_FILE" ]; then
+            echo "Found AAB file: $AAB_FILE"
+            jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 \
+              -keystore keystore.jks \
+              -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+              -keypass "${{ secrets.ANDROID_KEY_PASSWORD }}" \
+              "$AAB_FILE" "${{ secrets.ANDROID_KEYSTORE_ALIAS }}"
+          else
+            echo "No AAB file found"
+          fi
+
       - name: Extract APK from AAB
         run: |
           AAB_FILE=$(find . -name "*.aab" -type f | head -1)
           if [ -n "$AAB_FILE" ]; then
             echo "Found AAB file: $AAB_FILE"
-            java -jar bundletool.jar build-apks --bundle="$AAB_FILE" --output=app.apks --mode=universal
+            java -jar bundletool.jar build-apks --bundle="$AAB_FILE" --output=app.apks --mode=universal --ks=keystore.jks --ks-pass=pass:${{ secrets.ANDROID_KEYSTORE_PASSWORD }} --ks-key-alias=${{ secrets.ANDROID_KEYSTORE_ALIAS }} --key-pass=pass:${{ secrets.ANDROID_KEY_PASSWORD }}
             unzip -o app.apks -d ./apks_output/
             find ./apks_output/ -name "*.apk" -exec cp {} ./ \;
           else
