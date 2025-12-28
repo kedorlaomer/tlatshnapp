@@ -78,7 +78,16 @@ jobs:
           echo "Keystore info:"
           keytool -list -v -keystore keystore.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}"
           echo "Alias length: $(echo "${{ secrets.ANDROID_KEYSTORE_ALIAS }}" | wc -c)"
-          echo "Password length: $(echo "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" | wc -c)"
+          echo "Keystore password length: $(echo "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" | wc -c)"
+          echo "Key password length: $(echo "${{ secrets.ANDROID_KEY_PASSWORD }}" | wc -c)"
+          
+          # Try to export the key to verify the key password
+          echo "Testing key password..."
+          keytool -exportcert -alias "${{ secrets.ANDROID_KEYSTORE_ALIAS }}" \
+            -keystore keystore.jks \
+            -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            -keypass "${{ secrets.ANDROID_KEY_PASSWORD }}" \
+            -file /tmp/test.crt || echo "Key password test failed"
 
       - name: Sign APK with apksigner
         run: |
