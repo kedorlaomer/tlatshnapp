@@ -73,11 +73,19 @@ jobs:
             echo "No AAB file found"
           fi
 
+      - name: Debug keystore
+        run: |
+          echo "Keystore info:"
+          keytool -list -v -keystore keystore.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}"
+          echo "Alias length: $(echo "${{ secrets.ANDROID_KEYSTORE_ALIAS }}" | wc -c)"
+          echo "Password length: $(echo "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" | wc -c)"
+
       - name: Sign APK with apksigner
         run: |
           for apk_file in *.apk; do
             if [ -f "$apk_file" ]; then
               echo "Signing $apk_file"
+              echo "Using alias: '${{ secrets.ANDROID_KEYSTORE_ALIAS }}'"
               $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
                 --ks keystore.jks \
                 --ks-pass pass:"${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
