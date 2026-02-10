@@ -19,8 +19,8 @@ function span(x: string, ch: string)  {
 }
 
 const ENTITIES = new Map([
-    [" ", " "],
-    [" ", " "],
+    ["&nbsp;", " "],
+    ["&thinsp;", " "],
     ["<br>", ""], // strictly speaking, not an entity; we simply ignore it
 ]);
 
