@@ -35,14 +35,14 @@ export function Passuk({
 
   return (
     <View key={source} style={styles.container}>
-       <ExternalLink href={sourceUrl(source)}>
-         <Text style={[
-             { color },
-             styles.source
-         ]}>    
+        <ExternalLink href={sourceUrl(source)}>
+          <Text style={[
+              { color },
+              styles.source
+          ]}>
             {displaySource}{'    '}
-         </Text>
-       </ExternalLink>
+          </Text>
+        </ExternalLink>
       <SefariaHtml 
         style={styles.text}
         color={color}
@@ -61,11 +61,15 @@ const styles = StyleSheet.create({
   source: {
       fontSize: baseFontSize-10,
       marginLeft: 10,
-      width: '20%',
+      maxWidth: '20%',
+      flexShrink: 1,
+      paddingTop: baseFontSize / 2,
+      paddingRight: 4,
+      textAlign: 'right',
   },
   container: {
-    flexDirection: 'row-reverse',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
+    flexDirection: 'row',
+    justifyContent: 'flex-start',
+    alignItems: 'center',
   }
 });
