@@ -2,6 +2,7 @@ import { View, StyleSheet, Text, type TextProps } from 'react-native';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { SefariaHtml } from '@/components/SefariaHtml';
+import { ExternalLink } from '@/components/ExternalLink';
 import { baseFontSize } from '@/constants/Fonts';
 
 export type PassukProps = TextProps & {
@@ -23,12 +24,14 @@ export function Passuk({
 
   return (
     <View key={source} style={styles.container}>
-      <Text style={[
-          { color },
-          styles.source
-      ]}>    
-         {source}{'    '}
-      </Text>
+      <ExternalLink href={`https://www.sefaria.org/${encodeURIComponent(source)}`}>
+        <Text style={[
+            { color },
+            styles.source
+        ]}>    
+           {source}{'    '}
+        </Text>
+      </ExternalLink>
       <SefariaHtml 
         style={styles.text}
         color={color}
@@ -52,6 +55,6 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row-reverse',
     justifyContent: 'center',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   }
 });
