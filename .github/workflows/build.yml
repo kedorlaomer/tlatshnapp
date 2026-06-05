@@ -32,16 +32,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
-
       - name: Authenticate with Expo
         run: eas whoami
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build Android APK
-        run: eas build --platform android --profile production --non-interactive --local
+        run: eas build --platform android --profile production --non-interactive
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
@@ -50,59 +47,6 @@ jobs:
           find . -name "*.aab" -o -name "*.apk" -type f
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-
-      - name: Download Bundletool
-        run: |
-          curl -L -o bundletool.jar https://github.com/google/bundletool/releases/latest/download/bundletool-all-1.18.3.jar
-
-      - name: Setup Android signing
-        run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
-        env:
-          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-
-      - name: Extract APK from AAB
-        run: |
-          AAB_FILE=$(find . -name "*.aab" -type f | head -1)
-          if [ -n "$AAB_FILE" ]; then
-            echo "Found AAB file: $AAB_FILE"
-            java -jar bundletool.jar build-apks --bundle="$AAB_FILE" --output=app.apks --mode=universal
-            unzip -o app.apks -d ./apks_output/
-            find ./apks_output/ -name "*.apk" -exec cp {} ./ \;
-          else
-            echo "No AAB file found"
-          fi
-
-      - name: Debug keystore
-        run: |
-          echo "Keystore info:"
-          keytool -list -v -keystore keystore.jks -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}"
-          echo "Alias length: $(echo "${{ secrets.ANDROID_KEYSTORE_ALIAS }}" | wc -c)"
-          echo "Keystore password length: $(echo "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" | wc -c)"
-          echo "Key password length: $(echo "${{ secrets.ANDROID_KEY_PASSWORD }}" | wc -c)"
-          
-          # Try to export the key to verify the key password
-          echo "Testing key password..."
-          keytool -exportcert -alias "${{ secrets.ANDROID_KEYSTORE_ALIAS }}" \
-            -keystore keystore.jks \
-            -storepass "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
-            -keypass "${{ secrets.ANDROID_KEY_PASSWORD }}" \
-            -file /tmp/test.crt || echo "Key password test failed"
-
-      - name: Sign APK with apksigner
-        run: |
-          for apk_file in *.apk; do
-            if [ -f "$apk_file" ]; then
-              echo "Signing $apk_file"
-              echo "Using alias: '${{ secrets.ANDROID_KEYSTORE_ALIAS }}'"
-              $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
-                --ks keystore.jks \
-                --ks-pass pass:"${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
-                --ks-key-alias "${{ secrets.ANDROID_KEYSTORE_ALIAS }}" \
-                --key-pass pass:"${{ secrets.ANDROID_KEY_PASSWORD }}" \
-                "$apk_file"
-            fi
-          done
 
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v4
