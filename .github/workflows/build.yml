@@ -38,7 +38,7 @@ jobs:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
       - name: Build Android APK
-        run: eas build --platform android --profile production --non-interactive
+        run: eas build --platform android --profile production --non-interactive --local
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
 
@@ -47,6 +47,43 @@ jobs:
           find . -name "*.aab" -o -name "*.apk" -type f
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Download Bundletool
+        run: |
+          curl -L -o bundletool.jar https://github.com/google/bundletool/releases/latest/download/bundletool-all-1.18.3.jar
+
+      - name: Setup Android signing
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > keystore.jks
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+
+      - name: Extract APK from AAB
+        run: |
+          AAB_FILE=$(find . -name "*.aab" -type f | head -1)
+          if [ -n "$AAB_FILE" ]; then
+            echo "Found AAB file: $AAB_FILE"
+            java -jar bundletool.jar build-apks --bundle="$AAB_FILE" --output=app.apks --mode=universal
+            unzip -o app.apks -d ./apks_output/
+            find ./apks_output/ -name "*.apk" -exec cp {} ./ \;
+          else
+            echo "No AAB file found"
+          fi
+
+      - name: Sign APK with apksigner
+        run: |
+          for apk_file in *.apk; do
+            if [ -f "$apk_file" ]; then
+              echo "Signing $apk_file"
+              echo "Using alias: '${{ secrets.ANDROID_KEYSTORE_ALIAS }}'"
+              $ANDROID_HOME/build-tools/34.0.0/apksigner sign \
+                --ks keystore.jks \
+                --ks-pass pass:"${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+                --ks-key-alias "${{ secrets.ANDROID_KEYSTORE_ALIAS }}" \
+                --key-pass pass:"${{ secrets.ANDROID_KEY_PASSWORD }}" \
+                "$apk_file"
+            fi
+          done
 
       - name: Upload Android artifacts
         uses: actions/upload-artifact@v4
