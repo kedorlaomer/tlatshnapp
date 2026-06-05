@@ -5,6 +5,7 @@ import { SefariaHtml } from '@/components/SefariaHtml';
 import { ExternalLink } from '@/components/ExternalLink';
 import { baseFontSize } from '@/constants/Fonts';
 import parseSource from '@/helpers/parseSource';
+import simplifySource from '@/helpers/simplifySource';
 
 function sourceUrl(source: string): string {
   const [book, chapter, verse] = parseSource(source);
@@ -15,6 +16,7 @@ function sourceUrl(source: string): string {
 export type PassukProps = TextProps & {
     source: string,
     text: string,
+    isFirst?: boolean,
     lightColor?: string,
     darkColor?: string,
 };
@@ -25,20 +27,22 @@ export function Passuk({
   darkColor,
   source,
   text,
+  isFirst = true,
   ...rest
 }: PassukProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const displaySource = isFirst ? source : simplifySource(source);
 
   return (
     <View key={source} style={styles.container}>
-      <ExternalLink href={sourceUrl(source)}>
-        <Text style={[
-            { color },
-            styles.source
-        ]}>    
-           {source}{'    '}
-        </Text>
-      </ExternalLink>
+       <ExternalLink href={sourceUrl(source)}>
+         <Text style={[
+             { color },
+             styles.source
+         ]}>    
+            {displaySource}{'    '}
+         </Text>
+       </ExternalLink>
       <SefariaHtml 
         style={styles.text}
         color={color}

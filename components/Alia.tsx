@@ -37,8 +37,8 @@ export function Alia({
          {heading}{'    '}
       </Text>
           {
-            span.map(([source, text]) => (
-              <Passuk key={createKey()} source={source} text={text}/>))
+            span.map(([source, text], index) => (
+              <Passuk key={createKey()} isFirst={index === 0} source={source} text={text}/>))
           }
       </View>
    );
